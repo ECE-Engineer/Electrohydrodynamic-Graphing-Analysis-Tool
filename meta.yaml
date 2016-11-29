@@ -1,0 +1,19 @@
+package:
+  name: ehdgraph
+  version: "0.1"
+
+source:
+  path: .
+
+requirements:
+  build:
+    - python
+    - numpy
+    - pyqtgraph
+    - pyserial
+
+  run:
+    - python
+    - numpy
+    - pyqtgraph
+    - pyserial
