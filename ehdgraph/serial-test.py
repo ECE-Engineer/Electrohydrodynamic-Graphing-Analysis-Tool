@@ -6,10 +6,9 @@ import os
 import time
 import tachometergraph
 import math
-
 import _thread
 
-graph1 = tachometergraph.TachGraph("PLOT FORCE(EHD) VS. TIME")
+graph1 = tachometergraph.TachGraph("PLOT ANGULAR ) VS. TIME")
 graph2 = tachometergraph.TachGraph("PLOT ANGULAR SPEED VS. TIME")
 graph3 = tachometergraph.TachGraph("PLOT TOTAL ANGLE VS. TIME")
 
@@ -30,7 +29,7 @@ k = 1			#chosen constant (k = Inertia / Radius)
 #NOTE : CALCULATIONS FOR DELTA THETA WILL NEED TO BE DRASTICALLY ALTERED FOR ACTUAL SPINNERS#
 #########################################################################################################
 try:
-	while((ser.is_open)):	# THIS WILL CHANGE TO NOT HAVE THE 1000		 and (count < 500)
+	while(ser.isOpen):	# THIS WILL CHANGE TO NOT HAVE THE 1000		 and (count < 500)
 		line = '{}'.format(ser.readline())
 		if (count == 0):
 			pass
