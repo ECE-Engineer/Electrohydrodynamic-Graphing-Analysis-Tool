@@ -9,64 +9,64 @@ import math
 import _thread
 
 graph1 = tachometergraph.TachGraph("PLOT ANGULAR ) VS. TIME")
-graph2 = tachometergraph.TachGraph("PLOT ANGULAR SPEED VS. TIME")
+graph2 = tachometergraph.TachGraph("PLOT ANGULAR VELOCITY VS. TIME")
 graph3 = tachometergraph.TachGraph("PLOT TOTAL ANGLE VS. TIME")
 
 ser = serial.Serial('COM5', 57600, timeout = 5)	# open serial port
-#print("port open")
-# print(ser.read(10))        # read up to ten bytes (timeout)
 
-# print(ser.name)         # check which port was really used
-
+direction = 0
 total_time = 0
-temp_anglular_speed = 0
+temp_anglular_velocity = 0
+temp2_angular_velocity = 0
 total_angle = 0
 count = 0
 n = 12			#constant (FIX THIS LATER) number of lines/arms in the encoder
 k = 1			#chosen constant (k = Inertia / Radius)
 
-#########################################################################################################
-#NOTE : CALCULATIONS FOR DELTA THETA WILL NEED TO BE DRASTICALLY ALTERED FOR ACTUAL SPINNERS#
-#########################################################################################################
-try:
-	while(ser.isOpen):	# THIS WILL CHANGE TO NOT HAVE THE 1000		 and (count < 500)
+while(ser.isOpen):
+	if (count == 0):
+		pass
+	else:
 		line = '{}'.format(ser.readline())
-		if (count == 0):
-			pass
-		elif (line == '{}'.format(b' \r ') or line == ""):
-			print("ok")
+		if len(line) < 9:
+			break
+			
+		#calculations should come after the checks that catch the specific errors (HERE)
+		args = ("'bnr\\ ")
+		temp = line.strip(args)
+		value = float(temp.split(",")[1])	# return the time difference between rotations
+		direction_bit = int(temp.split(",")[2])
+		if direction_bit == 0:	# return the direction of the spinning encoder "0 for positive" & "1 for negative"
+			direction = float(1)
 		else:
-			print("DONE")
-			print(line)
-			args = ("'bnr\\ ")
-			temp = line.strip(args)
-			value = float(temp.split(",")[1])	# return the time difference between rotations
-			angle_change = (math.pi)/(n)	#change in the angle
-			total_angle += angle_change			#total angle passed
-			total_time += value		#total time passed
-			angular_speed = angle_change/value		#angular speed
+			direction = float(-1)
+		
+		#calculations go here:
+		angle_change = (math.pi)/(n)	#change in the angle
+		total_angle += angle_change			#total angle passed
+		total_time += value		#total time passed
+		angular_velocity = (angle_change/value)*direction		#angular velocity
+		
+		if count%3 == 1:
+			temp_anglular_velocity = angular_velocity		#this is the previous angular velocity
 			
-			if count > 1:
-				angular_acceleration = (angular_speed - temp_anglular_speed)/value		#angular acceleration
-				EHD_force = angular_acceleration*1
-				####PLOT ANGULAR ACCELERATION VS. TIME
-				graph1.add_point(total_time, EHD_force)
+		if count%3 == 2:
+			temp2_angular_velocity = angular_velocity
 			
-			temp_anglular_speed = angular_speed		#this is the previous angular speed
+		if count > 1 && count%3 == 0:	#implement the smoothing function "moving average"
+			####PLOT ANGULAR velocity VS. TIME
+			average = (temp_anglular_velocity + temp2_angular_velocity + angular_velocity) / 3
+			graph2.add_point(total_time, average)
 			
-			####PLOT ANGULAR SPEED VS. TIME
-			graph2.add_point(total_time, angular_speed)
+		if count > 1:
+			angular_acceleration = (angular_velocity - temp_anglular_velocity)/value		#angular acceleration
+			EHD_force = angular_acceleration*1
+			####PLOT ANGULAR ACCELERATION VS. TIME
+			graph1.add_point(total_time, EHD_force)
 			
-			
-			####PLOT TOTAL ANGLE VS. TIME
-			graph3.add_point(total_time, total_angle)
-			
-			print(value)   # read a '\n' terminated line
-			
-		count += 1
-except IndexError:
-	print("ERROR CAUGHT")
-
+		####PLOT TOTAL ANGLE VS. TIME
+		graph3.add_point(total_time, total_angle)
+	count += 1
 ser.close()             # close port
 print("port closed")
 
@@ -76,46 +76,3 @@ try:
 	_thread.start_new_thread(graph3.close_graph())
 except TypeError:
 	print("Finished")
-
-
-# try:
-	# while True:
-		# pass
-# except KeyboardInterrupt:
-	# print("Done")
-
-
-# try:
-	# graph1.close_graph()
-	# print("111111")
-	# graph2.close_graph()
-	# print("222222222")
-	# graph3.close_graph()
-# except KeyboardInterrupt:
-	# print("END")
-
-# subprocess.Popen(['writeFromCurrent.py', '{}'.format(arg1), '{}'.format(arg4)], shell = True )
-# subprocess.call(['ensemble_test.exe', '-D', '\\\.\{}'.format(comPort), '-x', message])
-# import signal
-# print 'complete'
-#os.kill(ser.pid, signal.SIGTERM)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

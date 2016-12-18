@@ -18,6 +18,6 @@ requirements:
     - pyqtgraph
     - pyserial
 
-  test:
-    files:
-      - ehdgraph
+test:
+  files:
+    - ehdgraph
