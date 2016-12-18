@@ -4,6 +4,9 @@ at the tip of sharp metal pins.
 
 ## Installation
 ```
+download python 3.5
+download Miniconda
+
 conda install
 conda update conda
 conda install conda-build
@@ -15,6 +18,9 @@ conda build .
 OR
 
 ```
+download python 3.5
+download Miniconda
+
 conda install
 conda update conda
 conda create --name ehdgraph
