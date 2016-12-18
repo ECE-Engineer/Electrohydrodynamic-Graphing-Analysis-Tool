@@ -16,7 +16,8 @@ ser = serial.Serial('COM5', 57600, timeout = 5)	# open serial port
 
 direction = 0
 total_time = 0
-temp_anglular_velocity = 0
+temp3_anglular_velocity = 0
+temp1_anglular_velocity = 0
 temp2_angular_velocity = 0
 total_angle = 0
 count = 0
@@ -48,22 +49,24 @@ while(ser.isOpen):
 		angular_velocity = (angle_change/value)*direction		#angular velocity
 		
 		if count%3 == 1:
-			temp_anglular_velocity = angular_velocity		#this is the previous angular velocity
+			temp1_anglular_velocity = angular_velocity
 			
 		if count%3 == 2:
 			temp2_angular_velocity = angular_velocity
-			
-		if count > 1 && count%3 == 0:	#implement the smoothing function "moving average"
-			####PLOT ANGULAR velocity VS. TIME
-			average = (temp_anglular_velocity + temp2_angular_velocity + angular_velocity) / 3
-			graph2.add_point(total_time, average)
-			
-		if count > 1:
-			angular_acceleration = (angular_velocity - temp_anglular_velocity)/value		#angular acceleration
+		
+		if count > 3 && count%3 == 0:
+			angular_acceleration = (angular_velocity - temp3_anglular_velocity)/value		#angular acceleration
 			EHD_force = angular_acceleration*1
 			####PLOT ANGULAR ACCELERATION VS. TIME
 			graph1.add_point(total_time, EHD_force)
+		
+		if count > 1 && count%3 == 0:	#implement the smoothing function "moving average"
+			temp3_anglular_velocity = angular_velocity	#this is the previous angular velocity
 			
+			####PLOT ANGULAR velocity VS. TIME
+			average = (temp1_anglular_velocity + temp2_angular_velocity + temp3_anglular_velocity) / 3
+			graph2.add_point(total_time, average)
+		
 		####PLOT TOTAL ANGLE VS. TIME
 		graph3.add_point(total_time, total_angle)
 	count += 1
