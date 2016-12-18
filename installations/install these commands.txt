@@ -1,0 +1,8 @@
+conda install
+conda update conda
+conda create --name ehdgraph
+activate ehdgraph
+conda install --name ehdgraph python --update-dependencies
+conda install --name ehdgraph numpy --update-dependencies
+conda install --name ehdgraph pyqtgraph --update-dependencies
+conda install --name ehdgraph pyserial --update-dependencies
