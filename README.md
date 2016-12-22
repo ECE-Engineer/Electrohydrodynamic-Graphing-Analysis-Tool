@@ -30,3 +30,15 @@ conda install --name ehdgraph numpy --update-dependencies
 conda install --name ehdgraph pyqtgraph --update-dependencies
 conda install --name ehdgraph pyserial --update-dependencies
 ```
+
+##Executing
+'''
+*****After Installing the Necessary Dependencies*****
+			AND
+***After Downloading & Extracting the Zip folder into your specified folder***
+--> Please go to the command line and type:	cd [into-the-directory-with-that-folder]
+--> Then while in that directory type:		cd [Electrohydrodynamic-Graphing-Analysis-Tool]
+--> Then type:					activate ehdgraph
+--> Then type:					python test-program.py
+--> Lastly run your apparatus
+'''
