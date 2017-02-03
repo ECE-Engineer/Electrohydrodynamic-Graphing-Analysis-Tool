@@ -17,10 +17,7 @@ win.setWindowTitle('Graph Utility')
 pg.setConfigOptions(antialias=True)
 
 #THIS INITIALIZES ALL GRAPH WINDOWS TO BE ADDED TO THE GUI
-'''graphAll = win.addPlot(title="Superimposed Graphs", row=1, col=1, colspan=3)'''
-'''win.nextRow()'''
 graph2 = win.addPlot(title="Angular Velocity", row=2, col=1)
-'''graph1 = win.addPlot(title="Angular Acceleration", row=2, col=2)'''
 graph3 = win.addPlot(title="Total Angle", row=2, col=3)
 
 #THIS IS WHERE THE GRAPHS ARE PLOTTED IN REAL TIME
@@ -28,20 +25,14 @@ ser = serial.Serial('COM5', 57600, timeout = 5)	# open serial port
 
 direction = 0
 total_time = 0
-temp3_anglular_velocity = 0
-temp1_anglular_velocity = 0
-temp2_angular_velocity = 0
 total_angle = 0
 count = 0
-n = 12			#constant (FIX THIS LATER) number of lines/arms in the encoder
-k = 1			#chosen constant (k = Inertia / Radius)
+n = 6			#chosen constant (CHANGE AS NEEDED) number of lines/arms in the encoder
+k = 1			#chosen constant (CHANGE AS NEEDED) k = Inertia / Radius
 
-timeX1 = []
+timeX = []
 angleY = []
-timeX2 = []
-averageY = []
-timeX3 = []
-'''forceY = []'''
+velocity = []
 
 while(ser.isOpen):
 	if (count == 0):
@@ -63,49 +54,25 @@ while(ser.isOpen):
 		
 		#calculations go here:
 		angle_change = (math.pi)/(n)	#change in the angle
-		total_angle += angle_change			#total angle passed
-		angleY.append(total_angle)		#set the angle values
+		total_angle += k*angle_change*count			#total angle passed
 		total_time += value		#total time passed
-		timeX1.append(total_time)	#set the time values
 		angular_velocity = (angle_change/value)*direction		#angular velocity
 		
-		if count%3 == 1:
-			temp1_anglular_velocity = angular_velocity
-			
-		if count%3 == 2:
-			temp2_angular_velocity = angular_velocity
+		#add the values to the arrays
+		angleY.append(total_angle)		#set the angle values
+		timeX.append(total_time)	#set the time values
+		velocity.append(angular_velocity)
 		
-		if count > 3 & count%3 == 0:
-			timeX3.append(total_time)
-			'''angular_acceleration = (angular_velocity - temp3_anglular_velocity)/value		#angular acceleration'''
-			'''EHD_force = angular_acceleration*1'''
-			'''forceY.append(EHD_force)'''
-			####PLOT ANGULAR ACCELERATION VS. TIME
-			'''graphAll.plot(timeX3,forceY, pen=(0,255,0), name="Angular Acceleration")'''
-			'''pg.QtGui.QApplication.processEvents()'''
-			'''graph1.plot(timeX3,forceY, pen=(0,255,0), name="Angular Acceleration")'''
-			'''pg.QtGui.QApplication.processEvents()'''
-			'''graphAll.showGrid(x=True, y=True)'''
-			'''graph1.showGrid(x=True, y=True)'''
-		if count > 1 & count%3 == 0:	#implement the smoothing function "moving average"
-			timeX2.append(total_time)
-			temp3_anglular_velocity = angular_velocity	#this is the previous angular velocity
-			####PLOT ANGULAR velocity VS. TIME
-			average = (temp1_anglular_velocity + temp2_angular_velocity + temp3_anglular_velocity) / 3
-			averageY.append(average)		#set the average values
-			'''graphAll.plot(timeX2,averageY, pen=(0,0,255), name="Angular Velocity")'''
-			'''pg.QtGui.QApplication.processEvents()'''
-			graph2.plot(timeX2,averageY, pen=(0,0,255), name="Angular Velocity")
-			pg.QtGui.QApplication.processEvents()
-			'''graphAll.showGrid(x=True, y=True)'''
-			graph2.showGrid(x=True, y=True)
-		####PLOT TOTAL ANGLE VS. TIME
-		'''graphAll.plot(timeX1,angleY, pen=(255,0,0), name="Total Angle")'''
-		'''pg.QtGui.QApplication.processEvents()'''
-		graph3.plot(timeX1,angleY, pen=(255,0,0), name="Total Angle")
+		###PLOT THE VELOCITY
+		graph2.plot(timeX,velocity, pen=(0,0,255), name="Angular Velocity")
 		pg.QtGui.QApplication.processEvents()
-		'''graphAll.showGrid(x=True, y=True)'''
+		graph2.showGrid(x=True, y=True)
+		
+		####PLOT TOTAL ANGLE VS. TIME
+		graph3.plot(timeX,angleY, pen=(255,0,0), name="Total Angle")
+		pg.QtGui.QApplication.processEvents()
 		graph3.showGrid(x=True, y=True)
+		
 	count += 1
 ser.close()             # close port
 print("port closed")
