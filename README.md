@@ -32,7 +32,7 @@ conda install --name ehdgraph pyserial --update-dependencies
 ```
 
 ##Executing
-'''
+```
 ******After Installing the Necessary Dependencies*****  
 			AND  
 ***After Downloading & Extracting the Zip folder into your specified folder***  
@@ -47,4 +47,4 @@ EXAMPLE:	cd Desktop
 		activate ehdgraph  
 		python test-program.py  
 --> AND run your apparatus
-'''
+```
